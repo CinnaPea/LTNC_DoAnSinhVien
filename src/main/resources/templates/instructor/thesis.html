@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Đồ án')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Thesis Tracking</span>
+                        <h2>Đồ án</h2>
+                        <p class="hero-sub-text mb-0">
+                            Theo dõi các đồ án đã được tạo sau khi duyệt đăng ký của sinh viên.
+                        </p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-folder-tree"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-warning mb-4"
+                     th:if="${thesisCatalog != null and !thesisCatalog.apiAvailable()}"
+                     th:text="${thesisCatalog.message()}"></div>
+                <div class="alert alert-warning mb-4"
+                     th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}"
+                     th:text="${registrationCatalog.message()}"></div>
+                <div class="alert alert-warning mb-4"
+                     th:if="${topicCatalog != null and !topicCatalog.apiAvailable()}"
+                     th:text="${topicCatalog.message()}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-layer-group me-2"></i>
+                            Tổng quan đồ án
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Tổng số đồ án</span>
+                                <span class="info-value" th:text="${#lists.size(theses)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Đang thực hiện</span>
+                                <span class="info-value" th:text="${#lists.size(activeTheses)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Đã hoàn thành</span>
+                                <span class="info-value" th:text="${#lists.size(completedTheses)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Giảng viên</span>
+                                <span class="info-value" th:text="${lecturer.hoTen}">Nguyen Van B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-lock-open me-2"></i>
+                            Đồ án đang hướng dẫn
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(activeTheses)}">
+                            <article class="entity-card" th:each="entry : ${activeTheses}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge approved" th:text="${entry.thesis.trangThai}">Đang thực hiện</span>
+                                </div>
+
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Tên đề tài</h5>
+                                    <p class="entity-meta mt-2 mb-0">
+                                        DA_ID: <strong th:text="${entry.thesis.daId}">DA0001</strong>
+                                    </p>
+                                </div>
+
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Sinh vien</span>
+                                        <span class="info-value" th:text="${entry.studentName()}">Nguyen Van A</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">SV_ID</span>
+                                        <span class="info-value" th:text="${entry.registration != null ? entry.registration.svId : 'Chưa cập nhật'}">SV0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">DK_ID</span>
+                                        <span class="info-value" th:text="${entry.thesis.dkId}">DK0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Ngày thực hiện</span>
+                                        <span class="info-value"
+                                              th:text="${entry.thesis.ngayThucHien != null ? #temporals.format(entry.thesis.ngayThucHien, 'dd/MM/yyyy HH:mm') : 'Chưa cập nhật'}">
+                                            14/04/2026 10:09
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="topic-description-panel" th:if="${entry.registration != null and entry.registration.ghiChu != null and !#strings.isEmpty(entry.registration.ghiChu)}">
+                                    <span class="info-label">Ghi chú sinh viên</span>
+                                    <p class="topic-description-text" th:text="${entry.registration.ghiChu}">Nội dung ghi chú</p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(activeTheses)}">
+                            Hiện tại chưa có đồ án nào đang được hướng dẫn.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-box-archive me-2"></i>
+                            Đồ án đã hoàn thành
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(completedTheses)}">
+                            <article class="entity-card" th:each="entry : ${completedTheses}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge rejected" th:text="${entry.thesis.trangThai}">Hoàn thành</span>
+                                </div>
+
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Tên đề tài</h5>
+                                    <p class="entity-meta mt-2 mb-0">
+                                        Sinh viên: <strong th:text="${entry.studentName()}">Nguyen Van A</strong>
+                                    </p>
+                                </div>
+
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">DA_ID</span>
+                                        <span class="info-value" th:text="${entry.thesis.daId}">DA0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">DK_ID</span>
+                                        <span class="info-value" th:text="${entry.thesis.dkId}">DK0001</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(completedTheses)}">
+                            Hiện tại chưa có đồ án nào ở trạng thái hoàn thành.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

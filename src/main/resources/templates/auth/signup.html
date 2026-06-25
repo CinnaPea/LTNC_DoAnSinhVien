@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Sign Up')}"></head>
+<body class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Register a new account to access the system</p>
+            </div>
+
+            <form th:action="@{/signup}" th:object="${signupForm}" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="accountType" class="form-label">Account type</label>
+                    <select class="form-control" id="accountType" th:field="*{accountType}" required>
+                        <option value="SV">Student</option>
+                        <option value="GV">Lecturer</option>
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input class="form-control" type="text" id="username" th:field="*{username}"
+                               placeholder="Choose a username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input class="form-control" type="email" id="email" th:field="*{email}"
+                               placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="hoTen" class="form-label">Full name</label>
+                    <input class="form-control" type="text" id="hoTen" th:field="*{hoTen}"
+                           placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="password-field">
+                            <input class="form-control" type="password" id="password" th:field="*{password}"
+                                   placeholder="Create a password" required>
+                            <button class="password-toggle" type="button" id="passwordToggle"
+                                    aria-controls="password" aria-label="Show password">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm password</label>
+                        <div class="password-field">
+                            <input class="form-control" type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                                   placeholder="Re-enter password" required>
+                            <button class="password-toggle" type="button" id="confirmPasswordToggle"
+                                    aria-controls="confirmPassword" aria-label="Show password confirmation">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="studentFields">
+                    <div class="section-title">Student Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="tenLop" class="form-label">Class</label>
+                            <input class="form-control" type="text" id="tenLop" th:field="*{tenLop}" placeholder="e.g. 58">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="chuyenNganh" class="form-label">Major</label>
+                            <input class="form-control" type="text" id="chuyenNganh" th:field="*{chuyenNganh}" placeholder="e.g. Information Technology">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nienKhoa" class="form-label">School year</label>
+                            <input class="form-control" type="text" id="nienKhoa" th:field="*{nienKhoa}" placeholder="e.g. 2022 - 2027">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lecturerFields" class="d-none">
+                    <div class="section-title">Lecturer Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="thuocVien" class="form-label">Institute</label>
+                            <input class="form-control" type="text" id="thuocVien" th:field="*{thuocVien}" placeholder="Enter institute name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hocVi" class="form-label">Degree</label>
+                            <input class="form-control" type="text" id="hocVi" th:field="*{hocVi}" placeholder="e.g. ThS, TS">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+
+                <button class="auth-btn" type="submit">Create account</button>
+
+                <div class="auth-footer-links">
+                    <span>Already have an account?</span>
+                    <a th:href="@{/login}">Back to login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

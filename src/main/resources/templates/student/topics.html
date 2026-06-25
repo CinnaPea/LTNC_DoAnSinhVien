@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Tham gia đề tài')}"></head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Rails API</span>
+                        <h2>Danh sách đề tài</h2>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-info mb-4" th:if="${info}" th:text="${info}"></div>
+                <div class="alert alert-warning mb-4" th:if="${catalog != null and !catalog.apiAvailable()}" th:text="${catalog.message()}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <p class="entity-meta mb-0">
+                                Tổng cộng <strong th:text="${#lists.size(topics)}">0</strong> đề tài đang được đồng bộ từ Rails.
+                            </p>
+                            <span class="status-pill muted">Nguồn dữ liệu: Rails /api/the-loai</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-lock-open me-2"></i>
+                            Đề tài hiện có
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <p class="entity-meta mb-4">
+                            Tổng cộng <strong th:text="${#lists.size(openTopics)}">0</strong> đề tài có thể đăng ký.
+                        </p>
+
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(openTopics)}">
+                            <article class="entity-card" th:each="topic : ${pagedOpenTopics}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${topic.tlId}">DT01</span>
+                                    <span class="status-badge"
+                                          th:classappend="${topic.open} ? ' open' : ' rejected'"
+                                          th:text="${topic.trangThai}">Mở</span>
+                                </div>
+
+                                <div>
+                                    <h5 th:text="${topic.tenTl}">Tên đề tài</h5>
+                                </div>
+
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">TL_ID</span>
+                                        <span class="info-value" th:text="${topic.maTl}">TL0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Giảng viên</span>
+                                        <span class="info-value" th:text="${topic.gvId}">GV0001</span>
+                                    </div>
+                                </div>
+
+                                <div class="entity-actions">
+                                    <span class="entity-meta"
+                                          th:text="${topic.ngayLap != null ? #temporals.format(topic.ngayLap, 'dd/MM/yyyy HH:mm') : 'Khong ro ngay lap'}">
+                                        14/04/2026 10:09
+                                    </span>
+                                    <a class="btn btn-outline-success btn-sm"
+                                       th:href="@{/student/topics/{tlId}(tlId=${topic.tlId})}">
+                                        Xem thêm chi tiết
+                                    </a>
+                                </div>
+                            </article>
+                        </div>
+
+                        <nav class="mt-4" aria-label="Phan trang de tai co the dang ky" th:if="${openTotalPages > 1}">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item" th:classappend="${openCurrentPage == 1} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${openCurrentPage - 1}, closedPage=${closedCurrentPage})}">
+                                        Truoc
+                                    </a>
+                                </li>
+                                <li class="page-item"
+                                    th:each="pageNumber : ${openPageNumbers}"
+                                    th:classappend="${pageNumber == openCurrentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${pageNumber}, closedPage=${closedCurrentPage})}"
+                                       th:text="${pageNumber}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${openCurrentPage == openTotalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${openCurrentPage + 1}, closedPage=${closedCurrentPage})}">
+                                        Sau
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(openTopics)}">
+                            Hiện tại không có đề tài nào ở trạng thái mở.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-box-archive me-2"></i>
+                            Các đề tài đã kết thúc
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <p class="entity-meta mb-4">
+                            Các đề tài đã đóng đăng ký và chỉ còn để tham khảo.
+                            Tổng cộng <strong th:text="${#lists.size(closedTopics)}">0</strong> đề tài.
+                        </p>
+
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(closedTopics)}">
+                            <article class="entity-card" th:each="topic : ${pagedClosedTopics}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${topic.maTl}">DT01</span>
+                                    <span class="status-badge rejected" th:text="${topic.trangThai}">Đóng</span>
+                                </div>
+
+                                <div>
+                                    <h5 th:text="${topic.tenTl}">Tên đề tài</h5>
+                                </div>
+
+                                <p class="entity-description" th:text="${topic.moTa ?: 'Chua co mo ta cho de tai nay.'}">
+                                    Mô tả đề tài
+                                </p>
+
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">TL_ID</span>
+                                        <span class="info-value" th:text="${topic.tlId}">TL0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Giảng viên</span>
+                                        <span class="info-value" th:text="${topic.gvId}">GV0001</span>
+                                    </div>
+                                </div>
+
+                                <div class="entity-actions">
+                                    <span class="entity-meta"
+                                          th:text="${topic.ngayLap != null ? #temporals.format(topic.ngayLap, 'dd/MM/yyyy HH:mm') : 'Khong ro ngay lap'}">
+                                        14/04/2026 10:09
+                                    </span>
+                                    <span class="status-pill muted">Đã đóng đăng ký</span>
+                                </div>
+                            </article>
+                        </div>
+
+                        <nav class="mt-4" aria-label="Phan trang de tai da ket thuc" th:if="${closedTotalPages > 1}">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item" th:classappend="${closedCurrentPage == 1} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${openCurrentPage}, closedPage=${closedCurrentPage - 1})}">
+                                        Truoc
+                                    </a>
+                                </li>
+                                <li class="page-item"
+                                    th:each="pageNumber : ${closedPageNumbers}"
+                                    th:classappend="${pageNumber == closedCurrentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${openCurrentPage}, closedPage=${pageNumber})}"
+                                       th:text="${pageNumber}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${closedCurrentPage == closedTotalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/student/topics(openPage=${openCurrentPage}, closedPage=${closedCurrentPage + 1})}">
+                                        Sau
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(closedTopics)}">
+                            Hiện tại không có đề tài nào ở trạng thái đóng.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin Topic Oversight')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/admin-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Admin Topic</span>
+                        <h2>Topic oversight</h2>
+                        <p class="hero-sub-text mb-0">Admin xem toan bo de tai, nhung khong dong vai tro thay giang vien de sua luat nghiep vu.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-warning mb-4" th:if="${topicCatalog != null and !topicCatalog.apiAvailable()}" th:text="${topicCatalog.message()}"></div>
+
+                <div class="dashboard-card mb-4">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-layer-group me-2"></i>Topic summary</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Tong topics</span>
+                                <span class="info-value" th:text="${#lists.size(topicViews)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Open</span>
+                                <span class="info-value" th:text="${#lists.size(openTopicViews)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Closed</span>
+                                <span class="info-value" th:text="${#lists.size(closedTopicViews)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Scope</span>
+                                <span class="info-value">Read-only oversight</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mb-4">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-lock-open me-2"></i>Open topics</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(openTopicViews)}">
+                            <article class="entity-card" th:each="entry : ${openTopicViews}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge open" th:text="${entry.topic.trangThai}">Mo</span>
+                                </div>
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Ten de tai</h5>
+                                    <p class="entity-meta mt-2 mb-0">TL_ID: <strong th:text="${entry.topic.tlId}">TL0001</strong></p>
+                                </div>
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Lecturer</span>
+                                        <span class="info-value" th:text="${entry.lecturerName()}">Nguyen Van B</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">GV_ID</span>
+                                        <span class="info-value" th:text="${entry.topic.gvId}">GV0001</span>
+                                    </div>
+                                </div>
+                                <p class="entity-description" th:text="${entry.topic.moTa ?: 'Chua co mo ta.'}">Mo ta</p>
+                            </article>
+                        </div>
+                        <div class="empty-state" th:if="${#lists.isEmpty(openTopicViews)}">
+                            Chua co de tai nao o trang thai open.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-box-archive me-2"></i>Closed topics</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(closedTopicViews)}">
+                            <article class="entity-card" th:each="entry : ${closedTopicViews}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge rejected" th:text="${entry.topic.trangThai}">Dong</span>
+                                </div>
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Ten de tai</h5>
+                                    <p class="entity-meta mt-2 mb-0">TL_ID: <strong th:text="${entry.topic.tlId}">TL0001</strong></p>
+                                </div>
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Lecturer</span>
+                                        <span class="info-value" th:text="${entry.lecturerName()}">Nguyen Van B</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">GV code</span>
+                                        <span class="info-value" th:text="${entry.lecturerCode()}">GV0001</span>
+                                    </div>
+                                </div>
+                                <p class="entity-description" th:text="${entry.topic.moTa ?: 'Chua co mo ta.'}">Mo ta</p>
+                            </article>
+                        </div>
+                        <div class="empty-state" th:if="${#lists.isEmpty(closedTopicViews)}">
+                            Chua co de tai nao o trang thai closed.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

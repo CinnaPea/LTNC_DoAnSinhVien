@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Tổng hợp đăng ký đề tài')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/admin-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Tổng hợp đăng ký đề tài</span>
+                        <h2>Registration oversight</h2>
+                        <p class="hero-sub-text mb-0">Admin có thể theo dõi toàn bộ đăng ký đề tài mà không cần can thiệp vào quá trình duyệt của giảng viên.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-warning mb-4" th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}" th:text="${registrationCatalog.message()}"></div>
+                <div class="alert alert-warning mb-4" th:if="${topicCatalog != null and !topicCatalog.apiAvailable()}" th:text="${topicCatalog.message()}"></div>
+
+                <div class="dashboard-card mb-4">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-layer-group me-2"></i>Registration summary</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Tổng số đăng ký</span>
+                                <span class="info-value" th:text="${#lists.size(registrationViews)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Đang chờ</span>
+                                <span class="info-value" th:text="${#lists.size(pendingRegistrations)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Đã duyệt</span>
+                                <span class="info-value" th:text="${#lists.size(approvedRegistrations)}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Từ chối</span>
+                                <span class="info-value" th:text="${#lists.size(rejectedRegistrations)}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mb-4">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-hourglass-half me-2"></i>Đăng ký đang chờ</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(pendingRegistrations)}">
+                            <article class="entity-card" th:each="entry : ${pendingRegistrations}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge pending" th:text="${entry.registration.trangThai}">Chờ duyệt</span>
+                                </div>
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Tên đề tài</h5>
+                                    <p class="entity-meta mt-2 mb-0">DK_ID: <strong th:text="${entry.registration.dkId}">DK0001</strong></p>
+                                </div>
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Sinh viên</span>
+                                        <span class="info-value" th:text="${entry.studentName()}">Nguyen Van A</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">SV_ID</span>
+                                        <span class="info-value" th:text="${entry.registration.svId}">SV0001</span>
+                                    </div>
+                                </div>
+                                <p class="entity-description" th:text="${entry.registration.ghiChu ?: 'Khong có ghi chú.'}">Ghi chú</p>
+                            </article>
+                        </div>
+                        <div class="empty-state" th:if="${#lists.isEmpty(pendingRegistrations)}">
+                            Không có đăng ký nào đang chờ.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-list-check me-2"></i>Đăng ký đã xử lý</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="entity-grid" th:if="${!#lists.isEmpty(approvedRegistrations) or !#lists.isEmpty(rejectedRegistrations)}">
+                            <article class="entity-card" th:each="entry : ${approvedRegistrations}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge approved" th:text="${entry.registration.trangThai}">Đã duyệt</span>
+                                </div>
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Tên đề tài</h5>
+                                    <p class="entity-meta mt-2 mb-0">Sinh viên: <strong th:text="${entry.studentName()}">Nguyen Van A</strong></p>
+                                </div>
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Người duyệt</span>
+                                        <span class="info-value" th:text="${entry.approverName()}">Nguyen Van B</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Duyệt lúc</span>
+                                        <span class="info-value" th:text="${entry.registration.ngayChapThuan != null ? #temporals.format(entry.registration.ngayChapThuan, 'dd/MM/yyyy HH:mm') : 'Chua cap nhat'}">14/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="entity-card" th:each="entry : ${rejectedRegistrations}">
+                                <div class="entity-card-header">
+                                    <span class="entity-code" th:text="${entry.topicCode()}">DT01</span>
+                                    <span class="status-badge rejected" th:text="${entry.registration.trangThai}">Từ chối</span>
+                                </div>
+                                <div>
+                                    <h5 th:text="${entry.topicTitle()}">Tên đề tài</h5>
+                                    <p class="entity-meta mt-2 mb-0">Sinh viên: <strong th:text="${entry.studentName()}">Nguyen Van A</strong></p>
+                                </div>
+                                <div class="info-grid topic-meta-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Người duyệt</span>
+                                        <span class="info-value" th:text="${entry.approverName()}">Nguyen Van B</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Từ chối lúc</span>
+                                        <span class="info-value" th:text="${entry.registration.ngayChapThuan != null ? #temporals.format(entry.registration.ngayChapThuan, 'dd/MM/yyyy HH:mm') : 'Chua cap nhat'}">14/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        <div class="empty-state" th:if="${#lists.isEmpty(approvedRegistrations) and #lists.isEmpty(rejectedRegistrations)}">
+                            Chưa có đăng ký nào đã được xử lý.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

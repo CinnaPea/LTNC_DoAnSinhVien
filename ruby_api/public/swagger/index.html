@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DoAnSinhVien API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+    <style>
+      html {
+        box-sizing: border-box;
+        overflow-y: scroll;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+
+      body {
+        margin: 0;
+        background: #f5f7fb;
+      }
+
+      .topbar {
+        background: #122033;
+        color: #fff;
+        padding: 12px 20px;
+        font: 600 16px/1.4 sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">DoAnSinhVien Swagger UI</div>
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.onload = function () {
+        window.ui = SwaggerUIBundle({
+          url: "/swagger/openapi.json",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          layout: "StandaloneLayout",
+          displayRequestDuration: true,
+          tryItOutEnabled: true,
+          defaultModelsExpandDepth: 2,
+          defaultModelExpandDepth: 2
+        });
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+<aside xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar" class="sidebar-navigation" id="sidebar">
+    <div class="sidebar-header">
+        <a class="sidebar-logo" th:href="@{/dashboard}">
+            <em>Thesis</em>System
+        </a>
+        <button class="sidebar-toggle d-lg-none" id="sidebarToggle" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <ul>
+            <li>
+                <a th:href="@{/dashboard}" class="active">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-house"></i>
+                    <span>Trang chủ</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/student/topics}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-book"></i>
+                    <span>Đề tài</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/student/my-thesis}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>Đồ án của tôi</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/student/progress}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Tiến độ</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/student/submissions}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <span>Nộp bài</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/student/result}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-square-poll-vertical"></i>
+                    <span>Kết quả</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

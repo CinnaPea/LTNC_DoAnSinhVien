@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Thông tin tài khoản')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Profile</span>
+                        <h2>Thông tin cá nhân</h2>
+                        <p class="hero-sub-text mb-0">Cập nhật email và thông tin chuyên môn của giảng viên.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-id-badge"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-user-gear me-2"></i>Cập nhật hồ sơ giảng viên</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <form th:action="@{/instructor/profile}" th:object="${profileForm}" method="post" class="profile-form profile-account-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="username">Tên đăng nhập</label>
+                                    <input class="form-control" id="username" th:field="*{username}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="profileCode">Mã giảng viên</label>
+                                    <input class="form-control" id="profileCode" th:field="*{profileCode}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="hoTen">Họ tên</label>
+                                    <input class="form-control" id="hoTen" th:field="*{hoTen}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email</label>
+                                    <input class="form-control" id="email" th:field="*{email}" type="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="hocVi">Trình độ</label>
+                                    <input class="form-control" id="hocVi" th:field="*{hocVi}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thuocVien">Khoa/Viện</label>
+                                    <input class="form-control" id="thuocVien" th:field="*{thuocVien}" required>
+                                </div>
+                            </div>
+
+                            <div class="profile-action-row">
+                                <button class="auth-btn profile-submit" type="submit">Lưu thay đổi</button>
+                                <button class="btn profile-delete-btn" type="submit" formmethod="post"
+                                        th:formaction="@{/instructor/profile/delete}"
+                                        onclick="return confirm('Bạn có chắc muốn xóa tài khoản này không?');">
+                                    Xóa tài khoản
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

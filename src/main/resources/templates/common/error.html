@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Error')}"></head>
+
+<body class="app-shell">
+
+    <th:block th:if="${role == 'SINH_VIEN'}">
+        <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+    </th:block>
+
+    <th:block th:if="${role == 'GIANG_VIEN'}">
+        <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+    </th:block>
+
+    <div class="main-wrapper">
+
+        <th:block th:if="${role == 'SINH_VIEN'}">
+            <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+        </th:block>
+
+        <th:block th:if="${role == 'GIANG_VIEN'}">
+            <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+        </th:block>
+
+        <div class="content-area">
+            <h1>Đã xảy ra lỗi</h1>
+            <p>Xin lỗi, đã có lỗi xảy ra khi xử lý yêu cầu của bạn.</p>
+            <p class="mb-2">Error: <span th:text="${errorType}">UnknownError</span></p>
+            <p>Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu vấn đề vẫn tiếp diễn.</p>
+            <a class="btn btn-primary rounded-pill px-4" th:href="${backUrl}">
+                Quay lại ứng dụng
+            </a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

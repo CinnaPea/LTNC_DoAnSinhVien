@@ -1,0 +1,1099 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DoAnSinhVien API",
+    "version": "v1",
+    "description": "Static OpenAPI document for the Rails API used by the Spring Boot frontend."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    { "name": "AdminUsers", "description": "Single-admin user management endpoints." },
+    { "name": "TheLoai", "description": "CRUD for topic records." },
+    { "name": "DangKy", "description": "Registration CRUD plus approve and reject workflow." },
+    { "name": "DoAn", "description": "Thesis records created from approved registrations." },
+    { "name": "TienDo", "description": "Progress updates linked to a thesis." },
+    { "name": "BaiDang", "description": "Submission and report entries linked to a thesis." },
+    { "name": "DanhGia", "description": "Evaluation records that complete or reopen a thesis." }
+  ],
+  "paths": {
+    "/up": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": { "description": "Application is healthy" }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": ["AdminUsers"],
+        "summary": "List users",
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AdminUser" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["AdminUsers"],
+        "summary": "Create academic user",
+        "description": "Creates an SV or GV account. The SQL trigger is expected to create the linked profile row.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AdminUserCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminUser" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {
+        "tags": ["AdminUsers"],
+        "summary": "Show user",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "User detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminUser" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["AdminUsers"],
+        "summary": "Update academic user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AdminUserUpdateRequest" }
+            }
+          }
+        },
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Updated user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AdminUser" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["AdminUsers"],
+        "summary": "Delete academic user",
+        "description": "Deletes the NguoiDung row and relies on the SQL trigger/procedure cascade to remove linked academic records.",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/the-loai": {
+      "get": {
+        "tags": ["TheLoai"],
+        "summary": "List topics",
+        "responses": {
+          "200": {
+            "description": "List of topics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TheLoai" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["TheLoai"],
+        "summary": "Create topic",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TheLoaiCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created topic",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TheLoai" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/the-loai/{id}": {
+      "get": {
+        "tags": ["TheLoai"],
+        "summary": "Show topic",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Topic detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TheLoai" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["TheLoai"],
+        "summary": "Update topic",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TheLoaiUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated topic",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TheLoai" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "put": {
+        "tags": ["TheLoai"],
+        "summary": "Replace topic",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TheLoaiUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated topic",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TheLoai" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["TheLoai"],
+        "summary": "Delete topic",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      }
+    },
+    "/api/dang-ky": {
+      "get": {
+        "tags": ["DangKy"],
+        "summary": "List registrations",
+        "responses": {
+          "200": {
+            "description": "List of registrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/DangKy" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["DangKy"],
+        "summary": "Create registration",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangKyCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created registration",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/dang-ky/{id}": {
+      "get": {
+        "tags": ["DangKy"],
+        "summary": "Show registration",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Registration detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["DangKy"],
+        "summary": "Update pending registration note",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangKyUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated registration",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "put": {
+        "tags": ["DangKy"],
+        "summary": "Replace pending registration note",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangKyUpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated registration",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["DangKy"],
+        "summary": "Delete pending registration",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/dang-ky/{id}/approve": {
+      "patch": {
+        "tags": ["DangKy"],
+        "summary": "Approve registration",
+        "description": "Approving a registration also creates a DoAn record if one does not exist.",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangKyDecisionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Approved registration",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/dang-ky/{id}/reject": {
+      "patch": {
+        "tags": ["DangKy"],
+        "summary": "Reject registration",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DangKyDecisionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rejected registration",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DangKy" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/do-an": {
+      "get": {
+        "tags": ["DoAn"],
+        "summary": "List theses",
+        "responses": {
+          "200": {
+            "description": "List of theses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/DoAn" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/do-an/{id}": {
+      "get": {
+        "tags": ["DoAn"],
+        "summary": "Show thesis",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Thesis detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DoAn" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      }
+    },
+    "/api/tien-do": {
+      "get": {
+        "tags": ["TienDo"],
+        "summary": "List progress updates",
+        "responses": {
+          "200": {
+            "description": "List of progress entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TienDo" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["TienDo"],
+        "summary": "Create progress update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TienDoRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created progress update",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TienDo" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/tien-do/{id}": {
+      "get": {
+        "tags": ["TienDo"],
+        "summary": "Show progress update",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Progress detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TienDo" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["TienDo"],
+        "summary": "Update progress entry or feedback",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TienDoRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated progress entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TienDo" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "put": {
+        "tags": ["TienDo"],
+        "summary": "Replace progress entry or feedback",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TienDoRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated progress entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TienDo" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["TienDo"],
+        "summary": "Delete progress entry",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      }
+    },
+    "/api/bai-dang": {
+      "get": {
+        "tags": ["BaiDang"],
+        "summary": "List submissions",
+        "responses": {
+          "200": {
+            "description": "List of submissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/BaiDang" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["BaiDang"],
+        "summary": "Create submission",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BaiDangRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created submission",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaiDang" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/bai-dang/{id}": {
+      "get": {
+        "tags": ["BaiDang"],
+        "summary": "Show submission",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Submission detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaiDang" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["BaiDang"],
+        "summary": "Update submission",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BaiDangRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated submission",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaiDang" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "put": {
+        "tags": ["BaiDang"],
+        "summary": "Replace submission",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BaiDangRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated submission",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaiDang" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["BaiDang"],
+        "summary": "Delete submission",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      }
+    },
+    "/api/danh-gia": {
+      "get": {
+        "tags": ["DanhGia"],
+        "summary": "List evaluations",
+        "responses": {
+          "200": {
+            "description": "List of evaluations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/DanhGia" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["DanhGia"],
+        "summary": "Create evaluation",
+        "description": "Creating or updating an evaluation also marks the thesis as Hoan thanh.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DanhGiaRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created evaluation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DanhGia" }
+              }
+            }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/danh-gia/{id}": {
+      "get": {
+        "tags": ["DanhGia"],
+        "summary": "Show evaluation",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "200": {
+            "description": "Evaluation detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DanhGia" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "patch": {
+        "tags": ["DanhGia"],
+        "summary": "Update evaluation",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DanhGiaRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated evaluation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DanhGia" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "put": {
+        "tags": ["DanhGia"],
+        "summary": "Replace evaluation",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DanhGiaRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated evaluation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DanhGia" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFoundError" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      },
+      "delete": {
+        "tags": ["DanhGia"],
+        "summary": "Delete evaluation",
+        "description": "Deleting the final evaluation reopens the thesis to Dang hoan thanh.",
+        "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+        "responses": {
+          "204": { "description": "Deleted successfully" },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "IdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    },
+    "responses": {
+      "NotFoundError": {
+        "description": "Requested record was not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation or workflow error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "TheLoai": {
+        "type": "object",
+        "properties": {
+          "TL_ID": { "type": "string", "example": "TL0001" },
+          "MaTL": { "type": "string", "example": "DT01" },
+          "TenTL": { "type": "string", "example": "De tai 1" },
+          "MoTa": { "type": "string", "example": "Mo ta de tai" },
+          "GV_ID": { "type": "string", "example": "GV0001" },
+          "TrangThai": { "type": "string", "example": "Mo" },
+          "NgayLap": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TheLoaiCreateRequest": {
+        "type": "object",
+        "required": ["the_loai"],
+        "properties": {
+          "the_loai": {
+            "type": "object",
+            "required": ["MaTL", "TenTL", "GV_ID", "TrangThai"],
+            "properties": {
+              "TL_ID": { "type": "string" },
+              "MaTL": { "type": "string" },
+              "TenTL": { "type": "string" },
+              "MoTa": { "type": "string" },
+              "GV_ID": { "type": "string" },
+              "TrangThai": { "type": "string" },
+              "NgayLap": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "TheLoaiUpdateRequest": {
+        "type": "object",
+        "required": ["the_loai"],
+        "properties": {
+          "the_loai": {
+            "type": "object",
+            "properties": {
+              "MaTL": { "type": "string" },
+              "TenTL": { "type": "string" },
+              "MoTa": { "type": "string" },
+              "GV_ID": { "type": "string" },
+              "TrangThai": { "type": "string" }
+            }
+          }
+        }
+      },
+      "DangKy": {
+        "type": "object",
+        "properties": {
+          "DK_ID": { "type": "string", "example": "DK0001" },
+          "SV_ID": { "type": "string", "example": "SV0001" },
+          "TL_ID": { "type": "string", "example": "TL0001" },
+          "NgayDangKy": { "type": "string", "format": "date-time" },
+          "TrangThai": { "type": "string", "example": "Da duyet" },
+          "GhiChu": { "type": "string", "nullable": true },
+          "NguoiChapThuan": { "type": "string", "nullable": true },
+          "NgayChapThuan": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "DangKyCreateRequest": {
+        "type": "object",
+        "required": ["dang_ky"],
+        "properties": {
+          "dang_ky": {
+            "type": "object",
+            "required": ["SV_ID", "TL_ID"],
+            "properties": {
+              "SV_ID": { "type": "string" },
+              "TL_ID": { "type": "string" },
+              "GhiChu": { "type": "string" }
+            }
+          }
+        }
+      },
+      "DangKyUpdateRequest": {
+        "type": "object",
+        "required": ["dang_ky"],
+        "properties": {
+          "dang_ky": {
+            "type": "object",
+            "properties": {
+              "GhiChu": { "type": "string" }
+            }
+          }
+        }
+      },
+      "DangKyDecisionRequest": {
+        "type": "object",
+        "required": ["dang_ky"],
+        "properties": {
+          "dang_ky": {
+            "type": "object",
+            "required": ["NguoiChapThuan"],
+            "properties": {
+              "NguoiChapThuan": { "type": "string" }
+            }
+          }
+        }
+      },
+      "DoAn": {
+        "type": "object",
+        "properties": {
+          "DA_ID": { "type": "string", "example": "DA0001" },
+          "DK_ID": { "type": "string", "example": "DK0001" },
+          "GV_ID": { "type": "string", "example": "GV0001" },
+          "TrangThai": { "type": "string", "example": "Dang hoan thanh" },
+          "NgayThucHien": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TienDo": {
+        "type": "object",
+        "properties": {
+          "TD_ID": { "type": "string", "example": "TD0001" },
+          "DA_ID": { "type": "string", "example": "DA0001" },
+          "TieuDe": { "type": "string", "example": "Bao cao tien do 1" },
+          "NoiDung": { "type": "string", "nullable": true },
+          "TienDoHienTai": { "type": "integer", "nullable": true, "example": 40 },
+          "NgayGui": { "type": "string", "format": "date-time" },
+          "NhanXet": { "type": "string", "nullable": true }
+        }
+      },
+      "TienDoRequest": {
+        "type": "object",
+        "required": ["tien_do"],
+        "properties": {
+          "tien_do": {
+            "type": "object",
+            "properties": {
+              "DA_ID": { "type": "string" },
+              "TieuDe": { "type": "string" },
+              "NoiDung": { "type": "string" },
+              "TienDoHienTai": { "type": "integer" },
+              "NhanXet": { "type": "string" }
+            }
+          }
+        }
+      },
+      "BaiDang": {
+        "type": "object",
+        "properties": {
+          "BD_ID": { "type": "string", "example": "BD0001" },
+          "DA_ID": { "type": "string", "example": "DA0001" },
+          "TieuDe": { "type": "string", "example": "Bao cao lan 1" },
+          "NgayDang": { "type": "string", "format": "date-time" },
+          "MoTa": { "type": "string", "nullable": true },
+          "Link": { "type": "string", "nullable": true }
+        }
+      },
+      "BaiDangRequest": {
+        "type": "object",
+        "required": ["bai_dang"],
+        "properties": {
+          "bai_dang": {
+            "type": "object",
+            "properties": {
+              "DA_ID": { "type": "string" },
+              "TieuDe": { "type": "string" },
+              "MoTa": { "type": "string" },
+              "Link": { "type": "string" }
+            }
+          }
+        }
+      },
+      "DanhGia": {
+        "type": "object",
+        "properties": {
+          "DG_ID": { "type": "string", "example": "DG0001" },
+          "DA_ID": { "type": "string", "example": "DA0001" },
+          "GV_ID": { "type": "string", "example": "GV0001" },
+          "DiemSo": { "type": "number", "format": "decimal", "nullable": true, "example": 8.5 },
+          "NhanXet": { "type": "string", "nullable": true },
+          "NgayNX": { "type": "string", "format": "date-time" }
+        }
+      },
+      "DanhGiaRequest": {
+        "type": "object",
+        "required": ["danh_gia"],
+        "properties": {
+          "danh_gia": {
+            "type": "object",
+            "properties": {
+              "DA_ID": { "type": "string" },
+              "GV_ID": { "type": "string" },
+              "DiemSo": { "type": "number", "format": "decimal" },
+              "NhanXet": { "type": "string" }
+            }
+          }
+        }
+      },
+      "AdminUser": {
+        "type": "object",
+        "properties": {
+          "ND_ID": { "type": "string", "example": "ND0001" },
+          "Username": { "type": "string", "example": "sv001" },
+          "Email": { "type": "string", "example": "sv001@example.com" },
+          "VT_ID": { "type": "string", "example": "SV" },
+          "RoleName": { "type": "string", "example": "Sinh vien" },
+          "TrangThai": { "type": "boolean", "example": true },
+          "NgayLap": { "type": "string", "format": "date-time" },
+          "CapNhat": { "type": "string", "format": "date-time", "nullable": true },
+          "ProfileType": { "type": "string", "nullable": true },
+          "ProfileId": { "type": "string", "nullable": true },
+          "ProfileName": { "type": "string", "nullable": true }
+        }
+      },
+      "AdminUserCreateRequest": {
+        "type": "object",
+        "required": ["user"],
+        "properties": {
+          "user": {
+            "type": "object",
+            "required": ["Username", "Email", "Password", "VT_ID"],
+            "properties": {
+              "Username": { "type": "string" },
+              "Email": { "type": "string" },
+              "Password": { "type": "string" },
+              "VT_ID": { "type": "string", "enum": ["SV", "GV"] },
+              "TrangThai": { "type": "boolean" },
+              "ProfileName": { "type": "string" }
+            }
+          }
+        }
+      },
+      "AdminUserUpdateRequest": {
+        "type": "object",
+        "required": ["user"],
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "Username": { "type": "string" },
+              "Email": { "type": "string" },
+              "Password": { "type": "string" },
+              "TrangThai": { "type": "boolean" },
+              "ProfileName": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+<aside xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar" class="sidebar-navigation" id="sidebar">
+    <div class="sidebar-header">
+        <a class="sidebar-logo" th:href="@{/dashboard}">
+            <em>Thesis</em>System
+        </a>
+        <button class="sidebar-toggle d-lg-none" id="sidebarToggle" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <ul>
+            <li>
+                <a th:href="@{/admin/dashboard}" th:classappend="${activeSection == 'dashboard' ? ' active' : ''}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-house"></i>
+                    <span>Trang chu</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/topics}" th:classappend="${activeSection == 'topics' ? ' active' : ''}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Topic</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/registrations}" th:classappend="${activeSection == 'registrations' ? ' active' : ''}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>Registration</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/thesis}" th:classappend="${activeSection == 'thesis' ? ' active' : ''}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-folder-tree"></i>
+                    <span>Thesis</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

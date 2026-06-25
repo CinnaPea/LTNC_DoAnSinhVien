@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Dashboard sinh viên')}"></head>
+
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Student Dashboard</span>
+                        <h2>Xin chào 👋</h2>
+                        <p class="hero-main-text">
+                            Chào mừng,
+                            <strong th:text="${user.displayName}">Nguyễn Văn A</strong>
+                            quay trở lại hệ thống.
+                        </p>
+                        <p class="hero-sub-text mb-0">
+                            Theo dõi đề tài, đăng ký, đồ án và tiến độ học tập của bạn tại đây.
+                        </p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                </section>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <div class="dashboard-card h-100">
+                            <div class="dashboard-card-header">
+                                <h5>
+                                    <i class="fa-solid fa-id-card me-2"></i>
+                                    Thông tin tài khoản
+                                </h5>
+                            </div>
+
+                            <div class="dashboard-card-body">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">Họ tên</span>
+                                        <span class="info-value" th:text="${user.displayName}">Nguyễn Văn A</span>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <span class="info-label">Mã sinh viên</span>
+                                        <span class="info-value" th:text="${user.profileCode}">SV001</span>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <span class="info-label">Tên đăng nhập</span>
+                                        <span class="info-value" th:text="${user.username}">student01</span>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <span class="info-label">Khóa</span>
+                                        <span class="info-value" th:text="${user.extraInfo1}">58</span>
+                                    </div>
+
+                                    <div class="info-item info-item-full">
+                                        <span class="info-label">Chuyên ngành</span>
+                                        <span class="info-value" th:text="${user.extraInfo2}">Hệ thống thông tin</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="dashboard-card h-100 overview-card">
+                            <div class="dashboard-card-header">
+                                <h5>
+                                    <i class="fa-solid fa-circle-info me-2"></i>
+                                    Tổng quan
+                                </h5>
+                            </div>
+
+                            <div class="dashboard-card-body">
+                                <p class="mb-2">Bạn đã đăng nhập thành công vào hệ thống.</p>
+                                <p class="mb-2">
+                                    Tại đây, sinh viên có thể theo dõi đề tài đang mở, trạng thái đăng ký,
+                                    đồ án đang thực hiện và kết quả hoàn thành.
+                                </p>
+                                <p class="overview-note mb-0">
+                                    Các module chi tiết sẽ tiếp tục được mở rộng trong các phiên bản tiếp theo.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="mb-2">
+                    <div class="section-heading mb-3">
+                        <h5 class="mb-1">Tổng quan đề tài</h5>
+                        <p class="mb-0 text-muted">Dữ liệu được tổng hợp từ Thể loại, Đăng ký và Đồ án.</p>
+                    </div>
+
+                    <div class="alert alert-warning mb-4" th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}" th:text="${registrationCatalog.message()}"></div>
+                    <div class="alert alert-warning mb-4" th:if="${thesisCatalog != null and !thesisCatalog.apiAvailable()}" th:text="${thesisCatalog.message()}"></div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="dashboard-card student-stat-card h-100">
+                                <div class="dashboard-card-body">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </div>
+                                    <div class="stat-copy">
+                                        <span class="info-label">Đăng ký của tôi</span>
+                                        <strong class="stat-number" th:text="${studentRegistrationCount}">0</strong>
+                                        <div class="stat-legend">
+                                            <span><i class="legend-dot pending"></i><strong th:text="${pendingRegistrationCount}">0</strong> chờ duyệt</span>
+                                            <span><i class="legend-dot open"></i><strong th:text="${approvedRegistrationCount}">0</strong> đã duyệt</span>
+                                            <span><i class="legend-dot rejected"></i><strong th:text="${rejectedRegistrationCount + otherRegistrationCount}">0</strong> khác</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="dashboard-card student-stat-card h-100">
+                                <div class="dashboard-card-body">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-diagram-project"></i>
+                                    </div>
+                                    <div class="stat-copy">
+                                        <span class="info-label">Đồ án của tôi</span>
+                                        <strong class="stat-number" th:text="${activeThesisCount + completedThesisCount}">0</strong>
+                                        <div class="stat-legend">
+                                            <span><i class="legend-dot open"></i><strong th:text="${activeThesisCount}">0</strong> đang thực hiện</span>
+                                            <span><i class="legend-dot closed"></i><strong th:text="${completedThesisCount}">0</strong> đã hoàn thành</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<header xmlns:th="http://www.thymeleaf.org" th:fragment="topbar" class="topbar">
+    <div class="topbar-left">
+        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <img src="/images/Logo_MTA_new.png" alt="Logo" class="site-logo">
+    </div>
+
+    <div class="topbar-right">
+        <div class="dropdown">
+            <button class="btn user-chip dropdown-toggle"
+                    type="button"
+                    id="userDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>Giảng viên</span>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                    <a class="dropdown-item" th:href="@{/instructor/profile}">
+                        <i class="fa-solid fa-id-card me-2"></i>
+                        Thông tin cá nhân
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/instructor/students}">
+                        <i class="fa-solid fa-users me-2"></i>
+                        Sinh viên hướng dẫn
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/instructor/submissions}">
+                        <i class="fa-solid fa-inbox me-2"></i>
+                        Bài nộp
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/instructor/evaluation}">
+                        <i class="fa-solid fa-star me-2"></i>
+                        Đánh giá & chấm điểm
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

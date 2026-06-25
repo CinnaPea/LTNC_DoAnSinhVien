@@ -1,0 +1,80 @@
+<aside xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar" class="sidebar-navigation" id="sidebar">
+    
+    <div class="sidebar-header">
+        <a class="sidebar-logo" th:href="@{/dashboard}">
+            <em>Thesis</em>System
+        </a>
+        <button class="sidebar-toggle d-lg-none" id="sidebarToggle" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-menu">
+        <ul>
+            
+            <li>
+                <a th:href="@{/dashboard}" class="active">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-house"></i>
+                    <span>Trang chủ</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/topics}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Quản lý đề tài</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/students}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Sinh viên hướng dẫn</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/thesis}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-folder-tree"></i>
+                    <span>Đồ án</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/progress}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Theo dõi tiến độ</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/submissions}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>Bài nộp</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/instructor/evaluation}">
+                    <span class="rect"></span>
+                    <span class="circle"></span>
+                    <i class="fa-solid fa-star"></i>
+                    <span>Đánh giá & chấm điểm</span>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</aside>

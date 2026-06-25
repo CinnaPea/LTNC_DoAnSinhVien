@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Bài nộp sinh viên')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Bài nộp</span>
+                        <h2>Bài nộp sinh viên</h2>
+                        <p class="hero-sub-text mb-0">Tổng hợp các bài nộp theo từng đồ án để giảng viên xem nhanh.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-inbox"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-warning mb-4" th:if="${submissionCatalog != null and !submissionCatalog.apiAvailable()}" th:text="${submissionCatalog.message()}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-file-lines me-2"></i>Danh sách bài nộp</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="module-stack" th:if="${!#lists.isEmpty(submissionViews)}">
+                            <section class="module-entry" th:each="view : ${submissionViews}">
+                                <div class="module-entry-header">
+                                    <div>
+                                        <span class="entity-code" th:text="${view.thesisView.topicCode()}">DT01</span>
+                                        <h5 class="module-entry-title mt-2" th:text="${view.thesisView.topicTitle()}">Tên đề tài</h5>
+                                        <p class="entity-meta mt-2 mb-0">
+                                            Sinh viên: <strong th:text="${view.thesisView.studentName()}">Nguyen Van A</strong>
+                                        </p>
+                                    </div>
+                                    <span class="status-badge approved" th:text="${view.thesisView.thesis.trangThai}">Đang hoàn thành</span>
+                                </div>
+
+                                <div class="module-stack" th:if="${!#lists.isEmpty(view.submissions())}">
+                                    <article class="entity-card" th:each="entry : ${view.submissions()}">
+                                        <div class="entity-card-header">
+                                            <span class="entity-code" th:text="${entry.bdId}">BD0001</span>
+                                            <span class="status-badge pending">Đã gửi</span>
+                                        </div>
+
+                                        <div class="info-grid topic-meta-grid">
+                                            <div class="info-item">
+                                                <span class="info-label">Tiêu đề</span>
+                                                <span class="info-value" th:text="${entry.tieuDe}">Báo cáo lần 1</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ngày đăng</span>
+                                                <span class="info-value"
+                                                      th:text="${entry.ngayDang != null ? #temporals.format(entry.ngayDang, 'dd/MM/yyyy HH:mm') : 'Chưa có'}">
+                                                    14/04/2026 10:09
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="topic-description-panel" th:if="${entry.moTa != null and !#strings.isEmpty(entry.moTa)}">
+                                            <span class="info-label">Mô tả</span>
+                                            <p class="topic-description-text module-feedback" th:text="${entry.moTa}">Mô tả</p>
+                                        </div>
+
+                                        <div class="entity-actions" th:if="${entry.link != null and !#strings.isEmpty(entry.link)}">
+                                            <a class="module-link" th:href="${entry.link}" target="_blank" rel="noopener noreferrer" th:text="${entry.link}">
+                                                https://example.com
+                                            </a>
+                                        </div>
+                                    </article>
+                                </div>
+
+                                <div class="empty-state mt-4" th:if="${#lists.isEmpty(view.submissions())}">
+                                    Chưa có bài nộp nào cho đồ án này.
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(submissionViews)}">
+                            Chưa có bài nộp nào được gửi lên.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

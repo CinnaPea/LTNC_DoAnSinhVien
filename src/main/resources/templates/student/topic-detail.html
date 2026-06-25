@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${detail.topic.maTl})}"></head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Topic Detail</span>
+                        <h2 th:text="${detail.topic.tenTl}">Chi tiết đề tài</h2>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-file-circle-info"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+                <div class="alert alert-info mb-4" th:if="${info}" th:text="${info}"></div>
+                <div class="alert alert-warning mb-4"
+                     th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}"
+                     th:text="${registrationCatalog.message()}"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="dashboard-card h-100">
+                            <div class="dashboard-card-header">
+                                <h5>
+                                    <i class="fa-solid fa-book-open me-2"></i>
+                                    Nội dung đề tài
+                                </h5>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div class="info-grid topic-detail-grid mb-4">
+                                    <div class="info-item">
+                                        <span class="info-label">Mã đề tài</span>
+                                        <span class="info-value" th:text="${detail.topic.maTl}">DT01</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">TL_ID</span>
+                                        <span class="info-value" th:text="${detail.topic.tlId}">TL0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Trạng thái</span>
+                                        <span class="info-value">
+                                            <span class="status-badge"
+                                                  th:classappend="${detail.topic.open} ? ' open' : ' rejected'"
+                                                  th:text="${detail.topic.trangThai}">Mở</span>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Ngày lập</span>
+                                        <span class="info-value"
+                                              th:text="${detail.topic.ngayLap != null ? #temporals.format(detail.topic.ngayLap, 'dd/MM/yyyy HH:mm') : 'Khong ro ngay lap'}">
+                                            14/04/2026 10:09
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="topic-description-panel">
+                                    <span class="info-label">Mô tả đầy đủ</span>
+                                    <p class="topic-description-text"
+                                       th:text="${detail.topic.moTa ?: 'Đề tài này chưa có mô tả chi tiết.'}">
+                                        Mô tả chi tiết đề tài
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="dashboard-card h-100">
+                            <div class="dashboard-card-header">
+                                <h5>
+                                    <i class="fa-solid fa-chalkboard-user me-2"></i>
+                                    Giảng viên hướng dẫn
+                                </h5>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div th:if="${detail.lecturer != null}" class="d-flex flex-column gap-3">
+                                    <div class="info-item">
+                                        <span class="info-label">Họ tên</span>
+                                        <span class="info-value" th:text="${detail.lecturer.hoTen}">Nguyen Van B</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Mã giảng viên</span>
+                                        <span class="info-value" th:text="${detail.lecturer.gvId}">GV0001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Học vị</span>
+                                        <span class="info-value" th:text="${detail.lecturer.hocVi ?: 'Chưa cập nhật'}">ThS</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Thuộc viện</span>
+                                        <span class="info-value" th:text="${detail.lecturer.thuocVien ?: 'Chưa cập nhật'}">CNTT</span>
+                                    </div>
+                                </div>
+
+                                <div th:if="${detail.lecturer == null}" class="empty-state">
+                                    Chưa tìm thấy thông tin giảng viên chi tiết trong hệ thống Spring.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4" th:if="${detail.topic.open}">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-file-signature me-2"></i>
+                            Đăng ký đề tài
+                        </h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="empty-state" th:if="${existingRegistration != null}">
+                            <p class="entity-meta mb-3">
+                                Bạn đã có đăng ký cho đề tài này với mã
+                                <strong th:text="${existingRegistration.dkId}">DK0001</strong>.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <span class="status-badge"
+                                      th:classappend="${existingRegistration.pending} ? ' pending' : (${existingRegistration.approved} ? ' approved' : ' rejected')"
+                                      th:text="${existingRegistration.trangThai}">Chờ duyệt</span>
+                                <a class="btn btn-outline-success" th:href="@{/student/my-thesis}">Mở trang đăng ký của tôi</a>
+                            </div>
+                        </div>
+
+                        <form th:if="${existingRegistration == null and (registrationCatalog == null or registrationCatalog.apiAvailable())}"
+                              th:action="@{/student/topics/{tlId}/register(tlId=${detail.topic.tlId})}"
+                              th:object="${registrationForm}"
+                              method="post"
+                              class="profile-form">
+                            <p class="entity-meta mb-0">
+                                Đề tài này đang mở. Bạn có thể gửi ghi chú để đăng ký với giảng viên hướng dẫn.
+                            </p>
+                            <div class="form-group">
+                                <label class="form-label" for="ghiChu">Ghi chú đăng ký</label>
+                                <textarea class="form-control topic-textarea"
+                                          id="ghiChu"
+                                          th:field="*{ghiChu}"
+                                          rows="5"
+                                          placeholder="Nhập lý do, định hướng, hoặc thông tin bổ sung nếu cần"></textarea>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button type="submit" class="btn btn-success">Đăng ký đề tài</button>
+                                <a class="btn btn-outline-secondary" th:href="@{/student/topics}">Quay lại danh sách</a>
+                            </div>
+                        </form>
+
+                        <div class="empty-state"
+                             th:if="${existingRegistration == null and registrationCatalog != null and !registrationCatalog.apiAvailable()}">
+                            Chưa thể gửi đăng ký vì Rails API đang không sẵn sàng.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mt-4" th:if="${!detail.topic.open}">
+                    <div class="dashboard-card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <p class="entity-meta mb-0">
+                            Đề tài này đã đóng đăng ký và chỉ còn để tham khảo.
+                        </p>
+                        <span class="status-pill muted">Đăng ký đã khóa</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

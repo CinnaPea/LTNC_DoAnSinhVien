@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${moduleTitle})}"></head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Rails Handoff</span>
+                        <h2 th:text="${moduleTitle}">Module</h2>
+                        <p class="hero-sub-text mb-0" th:text="${moduleMessage}">Message</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-info mb-4" th:if="${info}" th:text="${info}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-body">
+                        <div class="empty-state">
+                            Module nay se tiep tuc duoc phat trien phia Ruby on Rails, con Spring chi giu auth, profile, dashboard va nen SQL hien tai.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

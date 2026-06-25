@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Thông tin tài khoản')}"></head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Profile</span>
+                        <h2>Thông tin cá nhân</h2>
+                        <p class="hero-sub-text mb-0">Cập nhật email và thông tin học tập của bạn tại đây.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-user-pen me-2"></i>Cập nhật hồ sơ sinh viên</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <form th:action="@{/student/profile}" th:object="${profileForm}" method="post" class="profile-form profile-account-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="username">Tên đăng nhập</label>
+                                    <input class="form-control" id="username" th:field="*{username}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="profileCode">Mã sinh viên</label>
+                                    <input class="form-control" id="profileCode" th:field="*{profileCode}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="hoTen">Họ tên</label>
+                                    <input class="form-control" id="hoTen" th:field="*{hoTen}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email</label>
+                                    <input class="form-control" id="email" th:field="*{email}" type="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="tenLop">Khóa</label>
+                                    <input class="form-control" id="tenLop" th:field="*{tenLop}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="nienKhoa">Năm học</label>
+                                    <input class="form-control" id="nienKhoa" th:field="*{nienKhoa}" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="chuyenNganh">Chuyên ngành</label>
+                                <input class="form-control" id="chuyenNganh" th:field="*{chuyenNganh}" required>
+                            </div>
+
+                            <div class="profile-action-row">
+                                <button class="auth-btn profile-submit" type="submit">Lưu thay đổi</button>
+                                <button class="btn profile-delete-btn" type="submit" formmethod="post"
+                                        th:formaction="@{/student/profile/delete}"
+                                        onclick="return confirm('Bạn có chắc muốn xóa tài khoản này không?');">
+                                    Xóa tài khoản
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

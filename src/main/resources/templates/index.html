@@ -1,0 +1,16 @@
+<!DOCTYPE html> 
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{fragments/head :: head('Thesis Management')}"></head>
+    <body class="app-shell">
+        <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+        <div class="main-wrapper">
+            <div th:replace="~{fragments/topbar :: topbar}"></div>
+            <div class="content-area">
+                <h1>Hello, World!</h1>
+                <p>This is the home page.</p>
+                <p>It is a WIP</p>
+            </div>
+        </div>
+        <div th:replace="~{fragments/scripts :: scripts}"></div>
+    </body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Dashboard giảng viên')}"></head>
+
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Instructor Dashboard</span>
+                        <h2>Xin chào giảng viên 👋</h2>
+                        <p class="hero-main-text">
+                            Chào mừng,
+                            <strong th:text="${user.displayName}">Nguyễn Văn B</strong>
+                            quay trở lại hệ thống.
+                        </p>
+                        <p class="text-muted mb-0">
+                            Đây là khu vực dành cho giảng viên trong hệ thống tổ chức kỳ thi.
+                        </p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                </section>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fa-solid fa-id-badge me-2"></i>Thông tin giảng viên
+                                </h5>
+                                <p class="mb-2">
+                                    <strong>Họ tên:</strong>
+                                    <span th:text="${user.displayName}">Nguyễn Văn B</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Mã giảng viên:</strong>
+                                    <span th:text="${user.profileCode}">GV001</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Tên đăng nhập:</strong>
+                                    <span th:text="${user.username}">lecturer01</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Học vị:</strong>
+                                    <span th:text="${user.extraInfo1}">Thạc sĩ</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Thuộc viện:</strong>
+                                    <span th:text="${user.extraInfo2}">Viện CNTT</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fa-solid fa-circle-info me-2"></i>Tổng quan
+                                </h5>
+                                <p class="mb-2">Bạn đã đăng nhập thành công vào hệ thống.</p>
+                                <p class="mb-2">Từ đây, giảng viên có thể theo dõi kỳ thi, danh sách sinh viên, thông tin phòng thi và quá trình điểm danh.</p>
+                                <p class="mb-0 text-muted">
+                                    Các chức năng quản trị và giám sát sẽ được mở rộng ở các module tiếp theo.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-4 mb-0" th:if="${topicCatalog != null and !topicCatalog.apiAvailable()}" th:text="${topicCatalog.message()}"></div>
+                <div class="alert alert-warning mt-4 mb-0" th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}" th:text="${registrationCatalog.message()}"></div>
+                <div class="alert alert-warning mt-4 mb-0" th:if="${thesisCatalog != null and !thesisCatalog.apiAvailable()}" th:text="${thesisCatalog.message()}"></div>
+
+                <div class="row g-4 mt-1">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="dashboard-card instructor-stat-card h-100">
+                            <div class="dashboard-card-body">
+                                <div class="stat-donut"
+                                     th:style="|--topic-open:${topicOpenWidth}%;|"
+                                     th:attr="aria-label=|${openTopicCount} de tai dang mo, ${closedTopicCount} de tai da dong|">
+                                    <span th:text="${topicTotal}">0</span>
+                                </div>
+                                <div class="stat-copy">
+                                    <span class="info-label">Đề tài</span>
+                                    <h6>Trạng thái đề tài</h6>
+                                    <div class="stat-legend">
+                                        <span><i class="legend-dot open"></i><strong th:text="${openTopicCount}">0</strong> đang mở</span>
+                                        <span><i class="legend-dot closed"></i><strong th:text="${closedTopicCount}">0</strong> đã đóng</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="dashboard-card instructor-stat-card h-100">
+                            <div class="dashboard-card-body">
+                                <div class="stat-icon">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                </div>
+                                <div class="stat-copy">
+                                    <span class="info-label">Sinh viên hướng dẫn</span>
+                                    <strong class="stat-number" th:text="${supervisedStudentCount}">0</strong>
+                                    <p class="mb-0">Tổng số sinh viên đã có đồ án với giảng viên.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-12">
+                        <div class="dashboard-card instructor-stat-card h-100">
+                            <div class="dashboard-card-body">
+                                <div class="stat-icon">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                <div class="stat-copy">
+                                    <span class="info-label">Đồ án</span>
+                                    <strong class="stat-number" th:text="${activeThesisCount + completedThesisCount}">0</strong>
+                                    <div class="stat-legend">
+                                        <span><i class="legend-dot open"></i><strong th:text="${activeThesisCount}">0</strong>Đang thực hiện</span>
+                                        <span><i class="legend-dot closed"></i><strong th:text="${completedThesisCount}">0</strong> Đã hoàn thành</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<header xmlns:th="http://www.thymeleaf.org" th:fragment="topbar" class="topbar">
+    <div class="topbar-left">
+        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <img src="/images/Logo_MTA_new.png" alt="Logo" class="site-logo">
+    </div>
+
+    <div class="topbar-right">
+        <div class="dropdown">
+            <button class="btn user-chip dropdown-toggle"
+                    type="button"
+                    id="userDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>Admin</span>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                    <a class="dropdown-item" th:href="@{/admin/dashboard}">
+                        <i class="fa-solid fa-chart-column me-2"></i>
+                        Tong quan
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/admin/topics}">
+                        <i class="fa-solid fa-book-open me-2"></i>
+                        Topic
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/admin/registrations}">
+                        <i class="fa-solid fa-clipboard-check me-2"></i>
+                        Registration
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/admin/thesis}">
+                        <i class="fa-solid fa-folder-tree me-2"></i>
+                        Thesis
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                        Dang xuat
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

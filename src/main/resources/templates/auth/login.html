@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Login')}"></head>
+<body class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to the system</p>
+            </div>
+
+            <form th:action="@{/login}" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input class="form-control" type="text" id="username" name="username"
+                           th:value="${enteredUsername}" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="password-field">
+                        <input class="form-control" type="password" id="password" name="password"
+                               placeholder="Enter your password" required>
+                        <button class="password-toggle" type="button" id="passwordToggle"
+                                aria-controls="password" aria-label="Show password">
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-3" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+
+                <button class="auth-btn" type="submit">Login</button>
+
+                <div class="auth-footer-links">
+                    <span>Don’t have an account?</span>
+                    <a th:href="@{/signup}">Create account</a>
+                </div>
+            </form>
+
+            <div class="demo-box">
+                <span class="demo-label">Demo account</span>
+                <div><strong>Username:</strong> admin1</div>
+                <div><strong>Password:</strong> 1</div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

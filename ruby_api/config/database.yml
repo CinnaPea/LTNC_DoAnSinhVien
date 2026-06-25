@@ -1,0 +1,22 @@
+# Microsoft SQL Server
+
+default: &default
+  adapter: sqlserver
+  dataserver: PEANUT\SQLEXPRESS
+  database: DoAnSinhVien
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  timeout: 5000
+  login_timeout: 5
+  connection_retries: 1
+  retry_deadline: 10
+  azure: false
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  database: DoAnSinhVien_test
+
+production:
+  <<: *default

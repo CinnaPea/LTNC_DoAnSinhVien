@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${createMode} ? 'Tạo đề tài mới' : 'Cập nhật đề tài')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Topic Form</span>
+                        <h2 th:text="${createMode} ? 'Tạo đề tài mới' : 'Cập nhật đề tài'">Nhập thông tin đề tài</h2>
+                        <p class="hero-sub-text mb-0">
+                            Thông tin sẽ được gửi sang Rails API và lưu trong SQL Server.
+                        </p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-pen-ruler"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5>
+                            <i class="fa-solid fa-file-pen me-2"></i>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <form th:action="${formAction}" th:object="${topicForm}" method="post" class="profile-form">
+                            <div class="form-grid" th:if="${!createMode}">
+                                <div class="form-group">
+                                    <label class="form-label" for="tlId">TL_ID</label>
+                                    <input class="form-control" id="tlId" th:field="*{tlId}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="maTl">Mã đề tài</label>
+                                    <input class="form-control" id="maTl" th:field="*{maTl}" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid" th:if="${createMode}">
+                                <div class="form-group">
+                                    <label class="form-label" for="maTl">Mã đề tài</label>
+                                    <input class="form-control" id="maTl" th:field="*{maTl}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="trangThai">Trạng thái</label>
+                                    <select class="form-control" id="trangThai" th:field="*{trangThai}" required>
+                                        <option value="">Chọn trạng thái</option>
+                                        <option value="Mở">Mở</option>
+                                        <option value="Đóng">Đóng</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="tenTl">Tên đề tài</label>
+                                <input class="form-control" id="tenTl" th:field="*{tenTl}" required>
+                            </div>
+
+                            <div class="form-grid" th:if="${!createMode}">
+                                <div class="form-group">
+                                    <label class="form-label" for="trangThai">Trạng thái</label>
+                                    <select class="form-control" id="trangThai" th:field="*{trangThai}" required>
+                                        <option value="">Chọn trạng thái</option>
+                                        <option value="Mở">Mở</option>
+                                        <option value="Đóng">Đóng</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="lecturerCode">Giảng viên quản lý</label>
+                                    <input class="form-control" id="lecturerCode" th:value="${lecturer.gvId}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-grid" th:if="${createMode}">
+                                <div class="form-group">
+                                    <label class="form-label" for="lecturerCode">Giảng viên quản lý</label>
+                                    <input class="form-control" id="lecturerCode" th:value="${lecturer.gvId}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="moTa">Mô tả</label>
+                                <textarea class="form-control topic-textarea" id="moTa" th:field="*{moTa}" rows="6"></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="auth-btn profile-submit mb-0" type="submit"
+                                        th:text="${createMode} ? 'Tạo đề tài' : 'Lưu thay đổi'">Lưu</button>
+                                <a class="btn btn-outline-secondary" th:href="@{/instructor/topics}">Quay lại</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

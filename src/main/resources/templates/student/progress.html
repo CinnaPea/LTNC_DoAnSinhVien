@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Tiến độ')}"></head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/student-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper dashboard-wrapper">
+        <div th:replace="~{fragments/student-topbar :: topbar}"></div>
+
+        <main class="content-area dashboard-content">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Tiến độ</span>
+                        <h2>Theo dõi tiến độ đồ án</h2>
+                        <p class="hero-sub-text mb-0">Gửi cập nhật tiến độ cho từng đồ án và xem nhận xét từ giảng viên.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+                <div class="alert alert-info mb-4" th:if="${info}" th:text="${info}"></div>
+                <div class="alert alert-warning mb-4" th:if="${progressCatalog != null and !progressCatalog.apiAvailable()}" th:text="${progressCatalog.message()}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-chart-line me-2"></i>Tiến độ theo đồ án</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="module-stack" th:if="${!#lists.isEmpty(progressViews)}">
+                            <section class="module-entry" th:each="view : ${progressViews}">
+                                <div class="module-entry-header">
+                                    <div>
+                                        <span class="entity-code" th:text="${view.thesisView.topicCode()}">DT01</span>
+                                        <h5 class="module-entry-title mt-2" th:text="${view.thesisView.topicTitle()}">Ten de tai</h5>
+                                        <p class="entity-meta mt-2 mb-0">
+                                            DA_ID: <strong th:text="${view.thesisView.thesis.daId}">DA0001</strong>
+                                            <span class="ms-3">Giang vien:
+                                                <strong th:text="${view.thesisView.lecturer != null ? view.thesisView.lecturer.hoTen : view.thesisView.thesis.gvId}">GV</strong>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <span class="status-badge approved" th:text="${view.thesisView.thesis.trangThai}">Dang hoan thanh</span>
+                                </div>
+
+                                <form class="profile-form"
+                                      th:action="@{/student/progress/{daId}(daId=${view.thesisView.thesis.daId})}"
+                                      method="post">
+                                    <div class="module-form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Tieu de cap nhat</label>
+                                            <input class="form-control" name="tieuDe" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Tien do hien tai (%)</label>
+                                            <input class="form-control" name="tienDoHienTai" type="number" min="0" max="100">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Noi dung</label>
+                                        <textarea class="form-control module-textarea" name="noiDung"></textarea>
+                                    </div>
+                                    <div class="module-actions">
+                                        <span class="entity-meta">Thêm một mốc tiến độ mới cho đồ án này.</span>
+                                        <button type="submit" class="btn btn-success">Thêm tiến độ</button>
+                                    </div>
+                                </form>
+
+                                <div class="module-stack mt-4" th:if="${!#lists.isEmpty(view.entries())}">
+                                    <article class="entity-card" th:each="entry : ${view.entries()}">
+                                        <div class="entity-card-header">
+                                            <span class="entity-code" th:text="${entry.tdId}">TD0001</span>
+                                            <span class="status-badge pending" th:text="${entry.tienDoHienTai != null ? entry.tienDoHienTai + '%' : 'Chưa có %'}">40%</span>
+                                        </div>
+
+                                        <form class="profile-form"
+                                              th:action="@{/student/progress/{tdId}/update(tdId=${entry.tdId})}"
+                                              method="post">
+                                            <div class="module-form-grid">
+                                                <div class="form-group">
+                                                    <label class="form-label">Tieu de</label>
+                                                    <input class="form-control" name="tieuDe" th:value="${entry.tieuDe}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Tien do hien tai (%)</label>
+                                                    <input class="form-control" name="tienDoHienTai" type="number" min="0" max="100" th:value="${entry.tienDoHienTai}">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Noi dung</label>
+                                                <textarea class="form-control module-textarea" name="noiDung" th:text="${entry.noiDung}"></textarea>
+                                            </div>
+                                            <div class="topic-description-panel" th:if="${entry.nhanXet != null and !#strings.isEmpty(entry.nhanXet)}">
+                                                <span class="info-label">Nhận xét giảng viên</span>
+                                                <p class="topic-description-text module-feedback" th:text="${entry.nhanXet}">Nhận xét</p>
+                                            </div>
+                                            <div class="module-actions">
+                                                <span class="entity-meta"
+                                                      th:text="${entry.ngayGui != null ? #temporals.format(entry.ngayGui, 'dd/MM/yyyy HH:mm') : 'Chua co ngay gui'}">
+                                                    14/04/2026 10:09
+                                                </span>
+                                                <div class="module-actions-end">
+                                                    <button type="submit" class="btn btn-outline-success btn-sm">Cập nhật</button>
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                            th:formaction="@{/student/progress/{tdId}/delete(tdId=${entry.tdId})}">
+                                                        Xóa
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </article>
+                                </div>
+
+                                <div class="empty-state mt-4" th:if="${#lists.isEmpty(view.entries())}">
+                                    Chưa có cập nhật tiến độ nào cho đồ án này.
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(progressViews)}">
+                           Bạn chưa có đồ án nào đang thực hiện để cập nhật tiến độ.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin Dashboard')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/admin-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/admin-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Admin</span>
+                        <h2>Tong quan he thong</h2>
+                        <p class="hero-sub-text mb-0">
+                            Trang chu dong vai tro tong hop: nhin nhanh users, topics, registrations, va thesis.
+                        </p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+                <div class="alert alert-warning mb-4" th:if="${!apiAvailable}" th:text="${apiMessage}"></div>
+                <div class="alert alert-warning mb-4" th:if="${topicCatalog != null and !topicCatalog.apiAvailable()}" th:text="${topicCatalog.message()}"></div>
+                <div class="alert alert-warning mb-4" th:if="${registrationCatalog != null and !registrationCatalog.apiAvailable()}" th:text="${registrationCatalog.message()}"></div>
+                <div class="alert alert-warning mb-4" th:if="${thesisCatalog != null and !thesisCatalog.apiAvailable()}" th:text="${thesisCatalog.message()}"></div>
+
+                <div class="info-grid mb-4">
+                    <div class="info-item">
+                        <span class="info-label">Admin</span>
+                        <span class="info-value" th:text="${adminUsername}">admin</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Academic users</span>
+                        <span class="info-value" th:text="${#lists.size(users)}">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Topics</span>
+                        <span class="info-value" th:text="${#lists.size(topicViews)}">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Registrations</span>
+                        <span class="info-value" th:text="${#lists.size(registrationViews)}">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Theses</span>
+                        <span class="info-value" th:text="${#lists.size(thesisViews)}">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Students / Lecturers</span>
+                        <span class="info-value">
+                            <span th:text="${#lists.size(studentUsers)}">0</span>
+                            /
+                            <span th:text="${#lists.size(lecturerUsers)}">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card mb-4">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-chart-column me-2"></i>System summary</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="admin-chart-stack">
+                            <div class="admin-chart-row">
+                                <div class="admin-chart-label">
+                                    <strong>Users</strong>
+                                    <span th:text="|${#lists.size(activeUsers)} active / ${#lists.size(inactiveUsers)} locked|">0 active / 0 locked</span>
+                                </div>
+                                <div class="admin-chart-track">
+                                    <div class="admin-chart-segment success" th:style="'width:' + ${userActiveWidth} + '%'"></div>
+                                    <div class="admin-chart-segment danger" th:style="'width:' + ${userInactiveWidth} + '%'"></div>
+                                </div>
+                            </div>
+
+                            <div class="admin-chart-row">
+                                <div class="admin-chart-label">
+                                    <strong>Topics</strong>
+                                    <span th:text="|${#lists.size(openTopicViews)} open / ${#lists.size(closedTopicViews)} closed|">0 open / 0 closed</span>
+                                </div>
+                                <div class="admin-chart-track">
+                                    <div class="admin-chart-segment success" th:style="'width:' + ${topicOpenWidth} + '%'"></div>
+                                    <div class="admin-chart-segment muted" th:style="'width:' + ${topicClosedWidth} + '%'"></div>
+                                </div>
+                            </div>
+
+                            <div class="admin-chart-row">
+                                <div class="admin-chart-label">
+                                    <strong>Registrations</strong>
+                                    <span th:text="|${#lists.size(pendingRegistrations)} pending / ${#lists.size(approvedRegistrations)} approved / ${#lists.size(rejectedRegistrations)} rejected|">0 / 0 / 0</span>
+                                </div>
+                                <div class="admin-chart-track">
+                                    <div class="admin-chart-segment warning" th:style="'width:' + ${registrationPendingWidth} + '%'"></div>
+                                    <div class="admin-chart-segment success" th:style="'width:' + ${registrationApprovedWidth} + '%'"></div>
+                                    <div class="admin-chart-segment danger" th:style="'width:' + ${registrationRejectedWidth} + '%'"></div>
+                                </div>
+                            </div>
+
+                            <div class="admin-chart-row">
+                                <div class="admin-chart-label">
+                                    <strong>Theses</strong>
+                                    <span th:text="|${#lists.size(activeThesisViews)} active / ${#lists.size(completedThesisViews)} completed|">0 active / 0 completed</span>
+                                </div>
+                                <div class="admin-chart-track">
+                                    <div class="admin-chart-segment success" th:style="'width:' + ${thesisActiveWidth} + '%'"></div>
+                                    <div class="admin-chart-segment muted" th:style="'width:' + ${thesisCompletedWidth} + '%'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <h5 class="mb-0">
+                                <i class="fa-solid fa-users me-2"></i>
+                                Danh sach users
+                            </h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-outline-success btn-sm" th:href="@{/admin/users/new}">
+                                    <i class="fa-solid fa-user-plus me-2"></i>Tao tai khoan moi
+                                </a>
+                                <button class="btn btn-success btn-sm"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#adminUserList"
+                                        aria-expanded="false"
+                                        aria-controls="adminUserList">
+                                    <i class="fa-solid fa-table-list me-2"></i>Hien / an danh sach
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="collapse show" id="adminUserList">
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-body">
+                                    <div class="table-responsive" th:if="${!#lists.isEmpty(users)}">
+                                        <table class="table table-sm entity-table admin-user-table align-middle mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Username</th>
+                                                    <th>Ho ten</th>
+                                                    <th>Email</th>
+                                                    <th>Vai tro</th>
+                                                    <th>Profile</th>
+                                                    <th>Trang thai</th>
+                                                    <th class="text-end">Hanh dong</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="user, rowStat : ${pagedUsers}">
+                                                    <td>
+                                                        <span class="entity-code"
+                                                              th:text="${userPageStartIndex + rowStat.index + 1}">1</span>
+                                                    </td>
+                                                    <td th:text="${user.username}">username</td>
+                                                    <td th:text="${user.displayProfileName}">Nguyen Van A</td>
+                                                    <td th:text="${user.email}">mail@example.com</td>
+                                                    <td>
+                                                        <div class="d-flex flex-column gap-1">
+                                                            <span class="info-value" th:text="${user.displayRoleName}">Sinh vien</span>
+                                                            <span class="entity-meta" th:text="${user.vaiTroId}">SV</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-column gap-1">
+                                                            <span class="info-value" th:text="${user.displayProfileType}">SinhVien</span>
+                                                            <span class="entity-meta" th:text="${user.displayProfileId}">SV0001</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-badge"
+                                                              th:classappend="${user.active} ? ' approved' : ' rejected'"
+                                                              th:text="${user.statusLabel}">
+                                                            Dang hoat dong
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                                            <a class="btn btn-outline-secondary btn-sm"
+                                                               th:href="@{/admin/users/{ndId}/edit(ndId=${user.ndId})}">
+                                                                Sua
+                                                            </a>
+                                                            <form class="d-inline"
+                                                                  th:if="${user.active}"
+                                                                  th:action="@{/admin/users/{ndId}/status/{active}(ndId=${user.ndId},active=${false})}"
+                                                                  method="post">
+                                                                <button type="submit" class="btn btn-outline-danger btn-sm">Khoa</button>
+                                                            </form>
+                                                            <form class="d-inline"
+                                                                  th:if="${!user.active}"
+                                                                  th:action="@{/admin/users/{ndId}/status/{active}(ndId=${user.ndId},active=${true})}"
+                                                                  method="post">
+                                                                <button type="submit" class="btn btn-outline-success btn-sm">Mo khoa</button>
+                                                            </form>
+                                                            <form class="d-inline"
+                                                                  th:action="@{/admin/users/{ndId}/delete(ndId=${user.ndId})}"
+                                                                  method="post"
+                                                                  onsubmit="return confirm('Xoa tai khoan nay?');">
+                                                                <button type="submit" class="btn btn-outline-dark btn-sm">Xoa</button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <nav class="mt-4" aria-label="Phan trang danh sach users" th:if="${userTotalPages > 1}">
+                                        <ul class="pagination justify-content-center mb-0">
+                                            <li class="page-item" th:classappend="${userCurrentPage == 1} ? 'disabled'">
+                                                <a class="page-link"
+                                                   th:href="@{/admin/dashboard(userPage=${userCurrentPage - 1})}">
+                                                    Truoc
+                                                </a>
+                                            </li>
+                                            <li class="page-item"
+                                                th:each="pageNumber : ${userPageNumbers}"
+                                                th:classappend="${pageNumber == userCurrentPage} ? 'active'">
+                                                <a class="page-link"
+                                                   th:href="@{/admin/dashboard(userPage=${pageNumber})}"
+                                                   th:text="${pageNumber}">1</a>
+                                            </li>
+                                            <li class="page-item" th:classappend="${userCurrentPage == userTotalPages} ? 'disabled'">
+                                                <a class="page-link"
+                                                   th:href="@{/admin/dashboard(userPage=${userCurrentPage + 1})}">
+                                                    Sau
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+
+                                    <div class="empty-state" th:if="${#lists.isEmpty(users)}">
+                                        Chua co tai khoan SV hoac GV nao duoc tra ve tu Rails API.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

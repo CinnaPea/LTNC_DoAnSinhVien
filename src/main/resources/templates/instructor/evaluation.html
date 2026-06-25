@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Danh gia do an')}"></head>
+<body class="app-shell">
+    <div th:replace="~{fragments/instructor-sidebar :: sidebar}"></div>
+
+    <div class="main-wrapper">
+        <div th:replace="~{fragments/instructor-topbar :: topbar}"></div>
+
+        <main class="content-area">
+            <div class="container-fluid">
+                <section class="dashboard-hero mb-4">
+                    <div class="dashboard-hero-text">
+                        <span class="dashboard-badge">Danh gia</span>
+                        <h2>Danh gia va cham diem</h2>
+                        <p class="hero-sub-text mb-0">Tao, cap nhat, va xoa danh gia cho cac do an do ban huong dan.</p>
+                    </div>
+                    <div class="dashboard-hero-icon">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </section>
+
+                <div class="alert alert-success mb-4" th:if="${success}" th:text="${success}"></div>
+                <div class="alert alert-danger mb-4" th:if="${error}" th:text="${error}"></div>
+                <div class="alert alert-info mb-4" th:if="${info}" th:text="${info}"></div>
+                <div class="alert alert-warning mb-4" th:if="${evaluationCatalog != null and !evaluationCatalog.apiAvailable()}" th:text="${evaluationCatalog.message()}"></div>
+
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h5><i class="fa-solid fa-medal me-2"></i>Danh gia theo do an</h5>
+                    </div>
+                    <div class="dashboard-card-body">
+                        <div class="module-stack" th:if="${!#lists.isEmpty(evaluationViews)}">
+                            <section class="module-entry" th:each="view : ${evaluationViews}">
+                                <div class="module-entry-header">
+                                    <div>
+                                        <span class="entity-code" th:text="${view.thesisView.topicCode()}">DT01</span>
+                                        <h5 class="module-entry-title mt-2" th:text="${view.thesisView.topicTitle()}">Ten de tai</h5>
+                                        <p class="entity-meta mt-2 mb-0">
+                                            Sinh vien: <strong th:text="${view.thesisView.studentName()}">Nguyen Van A</strong>
+                                            <span class="ms-3">DA_ID: <strong th:text="${view.thesisView.thesis.daId}">DA0001</strong></span>
+                                        </p>
+                                    </div>
+                                    <span class="status-badge"
+                                          th:classappend="${view.hasEvaluation() ? ' approved' : ' pending'}"
+                                          th:text="${view.hasEvaluation() ? 'Da danh gia' : 'Chua danh gia'}">
+                                        Chua danh gia
+                                    </span>
+                                </div>
+
+                                <form class="profile-form"
+                                      th:if="${!view.hasEvaluation()}"
+                                      th:action="@{/instructor/evaluation/{daId}(daId=${view.thesisView.thesis.daId})}"
+                                      method="post">
+                                    <div class="module-form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Diem so</label>
+                                            <input class="form-control" name="diemSo" type="number" min="0" max="10" step="0.01">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Ngay nhan xet</label>
+                                            <input class="form-control" value="Se tu dong cap nhat" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Nhan xet</label>
+                                        <textarea class="form-control module-textarea" name="nhanXet"></textarea>
+                                    </div>
+                                    <div class="module-actions">
+                                        <span class="entity-meta">Danh gia se dong bo trang thai do an sang hoan thanh.</span>
+                                        <div class="module-actions-end">
+                                            <button type="submit" class="btn btn-success btn-sm">Tao danh gia</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <form class="profile-form"
+                                      th:if="${view.hasEvaluation()}"
+                                      th:action="@{/instructor/evaluation/{dgId}/update(dgId=${view.evaluation.dgId})}"
+                                      method="post">
+                                    <div class="module-form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Diem so</label>
+                                            <input class="form-control"
+                                                   name="diemSo"
+                                                   type="number"
+                                                   min="0"
+                                                   max="10"
+                                                   step="0.01"
+                                                   th:value="${view.evaluation.diemSo}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Ngay nhan xet</label>
+                                            <input class="form-control"
+                                                   th:value="${view.evaluation.ngayNx != null ? #temporals.format(view.evaluation.ngayNx, 'dd/MM/yyyy HH:mm') : 'Se tu dong cap nhat'}"
+                                                   readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Nhan xet</label>
+                                        <textarea class="form-control module-textarea" name="nhanXet" th:text="${view.evaluation.nhanXet}"></textarea>
+                                    </div>
+                                    <div class="module-actions">
+                                        <span class="entity-meta">Danh gia se dong bo trang thai do an sang hoan thanh.</span>
+                                        <div class="module-actions-end">
+                                            <button type="submit" class="btn btn-success btn-sm">Cap nhat danh gia</button>
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm"
+                                                    th:formaction="@{/instructor/evaluation/{dgId}/delete(dgId=${view.evaluation.dgId})}">
+                                                Xoa danh gia
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
+                        </div>
+
+                        <div class="empty-state" th:if="${#lists.isEmpty(evaluationViews)}">
+                            Chua co do an nao de danh gia.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

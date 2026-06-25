@@ -1,0 +1,51 @@
+<header xmlns:th="http://www.thymeleaf.org" th:fragment="topbar" class="topbar">
+    <div class="topbar-left">
+        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <img src="/images/Logo_MTA_new.png" alt="Logo" class="site-logo">
+    </div>
+
+    <div class="topbar-right">
+        <div class="dropdown">
+            <button class="btn user-chip dropdown-toggle"
+                    type="button"
+                    id="userDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+
+                <i class="fa-solid fa-user-graduate"></i>
+                <span>Sinh viên</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                    <a class="dropdown-item" th:href="@{/student/profile}">
+                        <i class="fa-solid fa-id-card me-2"></i>
+                        Thông tin cá nhân
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/student/my-thesis}">
+                        <i class="fa-solid fa-folder-open me-2"></i>
+                        Đồ án của tôi
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/student/progress}">
+                        <i class="fa-solid fa-chart-line me-2"></i>
+                        Tiến độ học tập
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="logout-link dropdown-item text-danger">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

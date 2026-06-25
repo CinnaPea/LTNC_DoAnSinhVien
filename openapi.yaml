@@ -1,0 +1,830 @@
+openapi: 3.0.0
+info:
+  title: Final Webapp - Spring Boot API Documentation
+  description: |
+    Comprehensive API documentation for the Final Webapp project.
+    This application manages student thesis registrations and assignments
+    through an integrated Spring Boot + Rails system.
+    
+    **Architecture Note**: This API is the Spring Boot/SQL Server component.
+    Related data (Topics, Registrations, Theses) also come from Rails API endpoints.
+  version: 1.0.0
+  contact:
+    name: Development Team
+    email: dev@finalwebapp.local
+  license:
+    name: Internal Use Only
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+  - url: https://finalwebapp.local
+    description: Production Server
+
+tags:
+  - name: Authentication
+    description: User login, registration, and session management
+  - name: Dashboard
+    description: User dashboard and profile information
+  - name: Student Features
+    description: Student-specific operations (topic registration, thesis view)
+  - name: Instructor Features
+    description: Instructor-specific operations (topic management, approvals)
+  - name: Profile
+    description: User profile management
+
+paths:
+  /login:
+    get:
+      tags:
+        - Authentication
+      summary: Display login page
+      operationId: getLoginPage
+      description: Returns the login form HTML page
+      responses:
+        '200':
+          description: Login page displayed
+        '302':
+          description: Redirect to dashboard if already authenticated
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X GET http://localhost:8080/login
+    
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user
+      operationId: authenticateUser
+      description: |
+        Validates user credentials and creates session cookie.
+        Supports both database users and demo account (admin1/1).
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: admin1
+                  description: Username to authenticate
+                password:
+                  type: string
+                  format: password
+                  example: "1"
+                  description: User password
+              required:
+                - username
+                - password
+      responses:
+        '302':
+          description: Successful authentication, redirect to dashboard
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: loggedInUser=admin1; Path=/; Max-Age=86400; HttpOnly
+        '200':
+          description: Authentication failed, return login page with error
+          content:
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Invalid request format
+
+  /logout:
+    get:
+      tags:
+        - Authentication
+      summary: End user session
+      operationId: logoutUser
+      description: Clears authentication cookie and redirects to login
+      responses:
+        '302':
+          description: Successful logout, redirect to login page
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: loggedInUser=; Path=/; Max-Age=0; HttpOnly
+
+  /signup:
+    get:
+      tags:
+        - Authentication
+      summary: Display signup page
+      operationId: getSignupPage
+      description: Returns the registration form HTML page
+      responses:
+        '200':
+          description: Signup page displayed
+        '302':
+          description: Redirect to dashboard if already authenticated
+    
+    post:
+      tags:
+        - Authentication
+      summary: Register new user account
+      operationId: registerUser
+      description: |
+        Creates new user account (student or lecturer).
+        Automatically creates linked profile record via database trigger.
+        All fields required for respective account type.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: nhom_07_2024
+                email:
+                  type: string
+                  format: email
+                  example: group@university.edu
+                password:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: SecurePass123
+                confirmPassword:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: SecurePass123
+                accountType:
+                  type: string
+                  enum:
+                    - SV
+                    - GV
+                  example: SV
+                  description: SV=Student, GV=Lecturer
+                hoTen:
+                  type: string
+                  maxLength: 100
+                  example: Nguyễn Văn A
+                tenLop:
+                  type: string
+                  maxLength: 50
+                  example: CNTT-K16
+                  description: Required for students
+                chuyenNganh:
+                  type: string
+                  maxLength: 50
+                  example: Software Engineering
+                  description: Required for students
+                nienKhoa:
+                  type: string
+                  maxLength: 20
+                  example: "2024"
+                  description: Required for students
+                thuocVien:
+                  type: string
+                  maxLength: 100
+                  example: Faculty of Information Technology
+                  description: Required for lecturers
+                hocVi:
+                  type: string
+                  maxLength: 50
+                  example: PhD
+                  description: Required for lecturers
+              required:
+                - username
+                - email
+                - password
+                - confirmPassword
+                - accountType
+                - hoTen
+      responses:
+        '302':
+          description: Successful registration redirects to login; validation errors redirect back to signup with flash message
+        '400':
+          description: |
+            Invalid input. Possible errors:
+            - Username already exists
+            - Email already exists
+            - Password too short
+            - Password confirmation mismatch
+            - Missing required fields
+            - Invalid account type
+
+  /dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: Display user dashboard
+      operationId: getDashboard
+      description: |
+        Shows personalized dashboard based on user role.
+        Returns student, instructor, or admin dashboard.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Dashboard displayed
+          content:
+            text/html:
+              schema:
+                type: string
+        '302':
+          description: Not authenticated, redirect to login
+        '500':
+          description: User not found or role not recognized
+
+  /:
+    get:
+      tags:
+        - Dashboard
+      summary: Root path router
+      operationId: getRootPath
+      description: Routes to dashboard if authenticated, else to login
+      responses:
+        '302':
+          description: Redirect to appropriate location
+
+  /profile:
+    get:
+      tags:
+        - Profile
+      summary: Display user profile
+      operationId: getUserProfile
+      description: Shows current user's profile information
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Profile page displayed
+          content:
+            text/html:
+              schema:
+                type: string
+        '302':
+          description: Not authenticated, redirect to login
+    
+    post:
+      tags:
+        - Profile
+      summary: Update user profile
+      operationId: updateUserProfile
+      description: Updates user profile information
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                hoTen:
+                  type: string
+                  example: Nguyễn Văn A
+                email:
+                  type: string
+                  format: email
+                tenLop:
+                  type: string
+                  description: For students only
+                chuyenNganh:
+                  type: string
+                  description: For students only
+      responses:
+        '302':
+          description: Profile updated successfully or unauthenticated user redirected
+        '400':
+          description: Invalid input
+
+  /student/topics:
+    get:
+      tags:
+        - Student Features
+      summary: List available topics
+      operationId: listStudentTopics
+      description: |
+        Displays topics available for student registration.
+        Topics are retrieved from Rails API.
+        Shows both open and closed topics with status.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Topics page displayed
+          content:
+            text/html:
+              schema:
+                type: string
+        '302':
+          description: Not authenticated
+
+  /student/topics/{tlId}:
+    get:
+      tags:
+        - Student Features
+      summary: View topic details
+      operationId: getStudentTopicDetail
+      description: |
+        Shows detailed information about a specific topic.
+        Includes current registration status for the student.
+        Topic data fetched from Rails API.
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Topic detail page displayed
+        '404':
+          description: Topic not found
+        '302':
+          description: Not authenticated
+
+  /student/topics/{tlId}/register:
+    post:
+      tags:
+        - Student Features
+      summary: Register for topic
+      operationId: registerForTopic
+      description: |
+        Creates new registration (DangKy) for student to register for a topic.
+        Calls Rails API to create registration record.
+        Student ID automatically extracted from SQL Server.
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                ghiChu:
+                  type: string
+                  maxLength: 500
+                  example: Interested in this topic because...
+                  description: Optional notes/reason
+      responses:
+        '302':
+          description: Registration created, redirect to topics, or unauthenticated user redirected
+        '400':
+          description: |
+            Registration failed. Possible reasons:
+            - Topic not found
+            - Already registered
+            - Topic closed
+            - Rails API error
+
+  /student/topics/{tlId}/registration/{dkId}:
+    post:
+      tags:
+        - Student Features
+      summary: Update registration notes
+      operationId: updateStudentRegistration
+      description: |
+        Updates notes for an existing registration (DangKy).
+        Calls Rails API to update registration.
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+        - name: dkId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Registration ID
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                ghiChu:
+                  type: string
+                  maxLength: 500
+                  example: Updated notes...
+      responses:
+        '302':
+          description: Registration updated or unauthenticated user redirected
+        '400':
+          description: Update failed
+
+  /student/my-thesis:
+    get:
+      tags:
+        - Student Features
+      summary: View assigned thesis
+      operationId: getStudentThesis
+      description: |
+        Shows thesis assignments for the logged-in student.
+        Retrieves thesis data from Rails API.
+        Displays status, advisor, and progress information.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Thesis list page displayed
+        '302':
+          description: Not authenticated
+
+  /instructor/topics:
+    get:
+      tags:
+        - Instructor Features
+      summary: List instructor's topics
+      operationId: listInstructorTopics
+      description: |
+        Displays topics created by the logged-in instructor.
+        Retrieved from Rails API filtered by instructor ID.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Topics list page displayed
+        '302':
+          description: Not authenticated
+
+  /instructor/topics/new:
+    get:
+      tags:
+        - Instructor Features
+      summary: Display create topic form
+      operationId: getCreateTopicForm
+      description: Shows form to create new topic
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Create topic form displayed
+        '302':
+          description: Not authenticated
+    
+    post:
+      tags:
+        - Instructor Features
+      summary: Create new topic
+      operationId: createTopic
+      description: |
+        Creates new topic (TheLoai) in Rails database.
+        Instructor ID automatically extracted from SQL Server.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tenTheLoai:
+                  type: string
+                  maxLength: 255
+                  example: Mobile App Development
+                moTa:
+                  type: string
+                  example: Develop cross-platform mobile application
+                maxSV:
+                  type: integer
+                  example: 5
+                isOpen:
+                  type: boolean
+                  example: true
+              required:
+                - tenTheLoai
+      responses:
+        '302':
+          description: Topic created, redirect to topics list, or unauthenticated user redirected
+        '400':
+          description: Creation failed
+
+  /instructor/topics/{tlId}/edit:
+    get:
+      tags:
+        - Instructor Features
+      summary: Display edit topic form
+      operationId: getEditTopicForm
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Edit form displayed
+        '404':
+          description: Topic not found or not owned by instructor
+        '302':
+          description: Not authenticated
+    
+    post:
+      tags:
+        - Instructor Features
+      summary: Update topic
+      operationId: updateTopic
+      description: Updates topic information in Rails database
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tenTheLoai:
+                  type: string
+                moTa:
+                  type: string
+                maxSV:
+                  type: integer
+                isOpen:
+                  type: boolean
+      responses:
+        '302':
+          description: Topic updated
+        '400':
+          description: Update failed
+        '404':
+          description: Topic not found
+
+  /instructor/topics/{tlId}:
+    delete:
+      tags:
+        - Instructor Features
+      summary: Delete topic
+      operationId: deleteTopic
+      description: Deletes topic from Rails database
+      parameters:
+        - name: tlId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Topic ID
+      security:
+        - cookieAuth: []
+      responses:
+        '302':
+          description: Topic deleted
+        '404':
+          description: Topic not found
+        '400':
+          description: Delete failed
+
+  /instructor/registrations:
+    get:
+      tags:
+        - Instructor Features
+      summary: List pending registrations
+      operationId: listInstructorRegistrations
+      description: |
+        Shows student registrations (DangKy) for instructor's topics.
+        Displays pending approvals and registration status.
+        Data retrieved from Rails API.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Registrations list page displayed
+        '302':
+          description: Not authenticated
+
+  /instructor/registrations/{dkId}/approve:
+    post:
+      tags:
+        - Instructor Features
+      summary: Approve student registration
+      operationId: approveRegistration
+      description: |
+        Approves a student's topic registration.
+        Updates registration status in Rails database.
+      parameters:
+        - name: dkId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Registration ID
+      security:
+        - cookieAuth: []
+      responses:
+        '302':
+          description: Registration approved or unauthenticated user redirected
+        '400':
+          description: Approval failed
+
+  /instructor/my-thesis:
+    get:
+      tags:
+        - Instructor Features
+      summary: View advised thesis
+      operationId: getInstructorThesis
+      description: |
+        Shows thesis projects advised by the instructor.
+        Displays student progress and status.
+        Retrieved from Rails API.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Thesis list page displayed
+        '302':
+          description: Not authenticated
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: loggedInUser
+      description: |
+        Cookie-based authentication. Set by /login endpoint.
+        Value is username string.
+        Expires in 24 hours.
+        HttpOnly flag prevents JavaScript access.
+
+  schemas:
+    User:
+      type: object
+      description: User account record
+      properties:
+        ndId:
+          type: string
+          maxLength: 10
+          description: Unique user ID (NguoiDung ID)
+        username:
+          type: string
+          maxLength: 50
+          description: Login username
+        email:
+          type: string
+          format: email
+          description: User email address
+        vaiTroId:
+          type: string
+          enum:
+            - SV
+            - GV
+          description: Role (Student or Lecturer)
+        trangThai:
+          type: boolean
+          description: Account active status
+        ngayLap:
+          type: string
+          format: date-time
+          description: Account creation date
+        capNhat:
+          type: string
+          format: date-time
+          description: Last update date
+
+    Student:
+      type: object
+      description: Student profile
+      properties:
+        svId:
+          type: string
+          description: Student ID
+        ndId:
+          type: string
+          description: Parent user ID
+        maSv:
+          type: string
+          description: Student number
+        hoTen:
+          type: string
+          description: Student name
+        tenLop:
+          type: string
+          description: Class name
+        chuyenNganh:
+          type: string
+          description: Major/Specialization
+        nienKhoa:
+          type: string
+          description: Academic year
+
+    Lecturer:
+      type: object
+      description: Lecturer profile
+      properties:
+        gvId:
+          type: string
+          description: Lecturer ID
+        ndId:
+          type: string
+          description: Parent user ID
+        maGv:
+          type: string
+          description: Lecturer number
+        hoTen:
+          type: string
+          description: Lecturer name
+        thuocVien:
+          type: string
+          description: Department/Faculty
+        hocVi:
+          type: string
+          description: Academic degree/title
+
+    DashboardUserDTO:
+      type: object
+      description: User data formatted for dashboard
+      properties:
+        ndId:
+          type: string
+        username:
+          type: string
+        loaiTK:
+          type: string
+          enum:
+            - SINH_VIEN
+            - GIANG_VIEN
+            - ADMIN
+        hoTen:
+          type: string
+        maSvGv:
+          type: string
+          description: Student or Lecturer number
+        tenClass:
+          type: string
+          description: Class name or Department
+        chuyenNganh:
+          type: string
+          description: Major or degree title
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+
+security:
+  - cookieAuth: []
+
+x-info-details: |
+  ## Important Notes
+  
+  ### Authentication
+  - All protected endpoints require valid `loggedInUser` cookie
+  - Cookie set by POST /login endpoint
+  - Expires after 24 hours of inactivity
+  
+  ### Data Sources
+  - User data: SQL Server (NguoiDung, SinhVien, GiangVien)
+  - Topic data: Rails API (/api/the-loai)
+  - Registration data: Rails API (/api/dang-ky)
+  - Thesis data: Rails API (/api/do-an)
+  
+  ### Error Handling
+  - HTTP 302 redirects for form submissions
+  - Flash messages for user feedback
+  - Vietnamese error messages in UI
+  
+  ### Validation
+  - Client-side: HTML5 form validation
+  - Server-side: Service layer validation
+  - Cross-database: Limited due to architecture
+  
+  ### Rate Limiting
+  - Not currently implemented
+  - To be added in future release
